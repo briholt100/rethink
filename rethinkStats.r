@@ -25,8 +25,14 @@ likelihood <- dbinom(6,size=9,prob=p)
 unstd.posterior <- likelihood * prior
 posterior<-unstd.posterior/sum(unstd.posterior)
 plot (p,posterior,type='b',xlab = 'probabilty of water',ylab = 'posterior prob')
-mtext('20 points')
 
-samples<-sample(p,prob = posterior,size = 1e4,replace = T)
-plot(samples,)
+
+samples<-sample(p,  prob = posterior,size = 1e4,replace = T)
+plot(samples,col=adjustcolor('blue',alpha=.5))
+library(ggplot2)
+qplot(samples)
 library(rethinking)
+dens(samples)
+sum(posterior[p<.5])
+sum(samples<.5)/1e4
+sum(samples>.5 & samples < .75)/1e4
