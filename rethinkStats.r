@@ -1,10 +1,11 @@
 #Code to  follow along rethinking stats with bayes, r.mcelreath
-
+library(ggplot2)
 #ch2  set up grid approximation
 #define grid
-p_grid<-seq(from=0,to=1,length.out=20)
+count<-10
+p_grid<-seq(from=0,to=1,length.out=count)
 #define prior
-prior<-rep(1,20)  #this is basically a uniform prior (I think)
+prior<-rep(1,count)  #this is basically a uniform prior (I think)
 #prior <-ifelse(p_grid<.5,0,1) #  this prior is a .5 assumption
 #prior<-exp(-5*abs(p_grid-.5))  #this prior has a sharp peak
 
@@ -15,9 +16,11 @@ unstd.posterior <- likelihood * prior
 #standardize the posterior so it sums to 1
 posterior<-unstd.posterior/sum(unstd.posterior)
 
-plot (p_grid,posterior,type='b',xlab = 'probabilty of water',ylab = 'posterior prob')
-mtext('20 points')
-
+plot (x=p_grid,y=posterior,type='b',xlab = 'probabilty of water',ylab = 'posterior prob',main='counts')
+mtext(text=c(count))
+p_grid[which.max(p_grid)]
+abline(v=p_grid[which.max(posterior)],col='blue')
+text(x=.5,y=.0010,round(p_grid[which.max(posterior)],4),col='blue')
 
 p<-seq(from=0,to=1,length.out=1000)
 prior<-rep(1,1000)  #this is basically a uniform prior (I think)
@@ -28,7 +31,7 @@ plot (p,posterior,type='b',xlab = 'probabilty of water',ylab = 'posterior prob')
 
 
 samples<-sample(p,  prob = posterior,size = 1e4,replace = T)
-plot(samples,col=adjustcolor('blue',alpha=.5))
+plot(samples,col=adjustcolor('blue',alpha=.3))
 library(ggplot2)
 qplot(samples)
 library(rethinking)
