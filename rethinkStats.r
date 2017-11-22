@@ -1,26 +1,40 @@
 #Code to  follow along rethinking stats with bayes, r.mcelreath
-library(ggplot2)
 #ch2  set up grid approximation
-#define grid
-count<-10
-p_grid<-seq(from=0,to=1,length.out=count)
-#define prior
-prior<-rep(1,count)  #this is basically a uniform prior (I think)
-#prior <-ifelse(p_grid<.5,0,1) #  this prior is a .5 assumption
+
+#build a function that does the above
+
+#prior <-ifelse(p_grid<.5,0,1) #  this prior assumes zero below .5 and 1 above
 #prior<-exp(-5*abs(p_grid-.5))  #this prior has a sharp peak
 
-#compute likelihood at each valuein grid
-likelihood <- dbinom(6,size=9,prob=p_grid)
-#compute product of likelihood and prior
-unstd.posterior <- likelihood * prior
-#standardize the posterior so it sums to 1
-posterior<-unstd.posterior/sum(unstd.posterior)
+posterior.from.grid<-function(trials, x, n, prior=prior){
+  prior<-rep(1,trials)  #uniform prior
+    p_grid<-seq(from=0,to=1,length.out=trials)
+  #compute likelihood at each value in grid
+  likelihood <- dbinom(x,size=n,prob=p_grid) #likelihood could be some other distribution, this assumes binomial  
+  #compute product of likelihood and prior
+  unstd.posterior <- likelihood * prior  #posterior is proportional to likelihood and prior  
+  #standardize the posterior so it sums to 1
+  posterior<-unstd.posterior/sum(unstd.posterior)  #ways to get event divided by sum of ways
+  output<-list(prior,p_grid,posterior,trials)
+  return (output)
+  }
 
-plot (x=p_grid,y=posterior,type='b',xlab = 'probabilty of water',ylab = 'posterior prob',main='counts')
-mtext(text=c(count))
-p_grid[which.max(p_grid)]
-abline(v=p_grid[which.max(posterior)],col='blue')
-text(x=.5,y=.0010,round(p_grid[which.max(posterior)],4),col='blue')
+
+plot.pfg<-function(x,y,trials){
+  plot(x=x,y=y,
+       type='b', xlab='probability of water',ylab="posterior probability")
+        title <- paste( length(x), "trials")
+        mtext(title)
+        #mtext(text=c(trials=trials))
+       abline(v=posterior[[2]][which.max(posterior[[3]])],col='blue')
+       text(x=.5,y=.0010,round(posterior[[2]][which.max(posterior[[3]])],4),col='blue')
+       abline(h=posterior[[3]][which.max(posterior[[3]])],col='red')
+       text(x=.5,y=.1,round(posterior[[3]][which.max(posterior[[3]])],4),col='red')
+}
+
+posterior<-posterior.from.grid(trials=20,x=3,n=3)
+plot.pfg(x=posterior[[2]],y=posterior[[3]],trials=posterior[4])
+
 
 p<-seq(from=0,to=1,length.out=1000)
 prior<-rep(1,1000)  #this is basically a uniform prior (I think)
