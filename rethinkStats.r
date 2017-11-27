@@ -10,9 +10,9 @@ posterior.from.grid<-function(trials, x, n, prior=prior){
   prior<-rep(1,trials)  #uniform prior
     p_grid<-seq(from=0,to=1,length.out=trials)
   #compute likelihood at each value in grid
-  likelihood <- dbinom(x,size=n,prob=p_grid) #likelihood could be some other distribution, this assumes binomial  
+  likelihood <- dbinom(x,size=n,prob=p_grid) #likelihood could be some other distribution, this assumes binomial
   #compute product of likelihood and prior
-  unstd.posterior <- likelihood * prior  #posterior is proportional to likelihood and prior  
+  unstd.posterior <- likelihood * prior  #posterior is proportional to likelihood and prior
   #standardize the posterior so it sums to 1
   posterior<-unstd.posterior/sum(unstd.posterior)  #ways to get event divided by sum of ways
   output<-list(prior,p_grid,posterior,trials)
@@ -35,7 +35,7 @@ plot.pfg<-function(x,y,trials){
 posterior<-posterior.from.grid(trials=20,x=3,n=3)
 plot.pfg(x=posterior[[2]],y=posterior[[3]],trials=posterior[4])
 
-
+###simple posterior from grid approx
 p<-seq(from=0,to=1,length.out=1000)
 prior<-rep(1,1000)  #this is basically a uniform prior (I think)
 likelihood <- dbinom(6,size=9,prob=p)
@@ -45,6 +45,7 @@ plot (p,posterior,type='b',xlab = 'probabilty of water',ylab = 'posterior prob')
 
 
 samples<-sample(p,  prob = posterior,size = 1e4,replace = T)
+
 plot(samples,col=adjustcolor('blue',alpha=.3))
 library(ggplot2)
 qplot(samples)
@@ -60,7 +61,6 @@ sum(samples>.5 & samples < .75)/1e4
 w<-c(.3,1);
 pulls<-c(.5,.5)
 w*pulls/sum(w*pulls)
-
 
 ways<-c(0,1,2)
 ways/sum(ways)
