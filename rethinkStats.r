@@ -7,8 +7,10 @@
 #prior<-exp(-5*abs(p_grid-.5))  #this prior has a sharp peak
 
 posterior.from.grid<-function(trials, x, n, prior=prior){
+  p_grid<-seq(from=0,to=1,length.out=trials)
   prior<-rep(1,trials)  #uniform prior
-    p_grid<-seq(from=0,to=1,length.out=trials)
+  #prior<-ifelse(p_grid<=.5,0,1)  #Stepwise prior
+  #prior<-ifelse(p_grid<=.5 | p_grid>=.8,0,1)  #Stepwise nuanced prior
   #compute likelihood at each value in grid
   likelihood <- dbinom(x,size=n,prob=p_grid) #likelihood could be some other distribution, this assumes binomial
   #compute product of likelihood and prior
@@ -32,7 +34,7 @@ plot.pfg<-function(x,y,trials){
        text(x=.5,y=.1,round(posterior[[3]][which.max(posterior[[3]])],4),col='red')
 }
 
-posterior<-posterior.from.grid(trials=20,x=3,n=3)
+posterior<-posterior.from.grid(trials=10,x=6,n=9)
 plot.pfg(x=posterior[[2]],y=posterior[[3]],trials=posterior[4])
 
 ###simple posterior from grid approx
@@ -49,6 +51,7 @@ samples<-sample(p,  prob = posterior,size = 1e4,replace = T)
 plot(samples,col=adjustcolor('blue',alpha=.3))
 library(ggplot2)
 qplot(samples)
+plot(density(samples))
 library(rethinking)
 dens(samples)
 sum(posterior[p<.5])
@@ -110,3 +113,17 @@ plot(df1,type='b')
 #witness a new panda give twins.  What's the probability the next birth is twins?
 
 #twins similar to water, singles to land.
+
+
+
+
+
+
+#Chapter 3
+
+#simulating predictions from total posterior pg 66, usin samples from above
+
+w<-rbinom(1e4,size = 9, prob = samples[samples <.4 & samples >.3])
+hist(w)
+plot(samples)
+median(samples)
