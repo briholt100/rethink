@@ -50,8 +50,13 @@ samples<-sample(p,  prob = posterior,size = 1e4,replace = T)
 
 plot(samples,col=adjustcolor('blue',alpha=.3))
 library(ggplot2)
+df<-data.frame(cbind(samples,posterior))
+ggplot(data=df,aes(y=samples,x=posterior,col=posterior))+geom_point()
 qplot(samples)
+
 plot(density(samples))
+
+
 library(rethinking)
 dens(samples)
 sum(posterior[p<.5])
