@@ -152,10 +152,6 @@ posterior<-dbinom(w,n,p_grid)*dunif(p_grid,0,1)
 posterior<-posterior/sum(posterior)
 
 
-data(Howell1)
-d<-Howell1
-str(d)
-
 
 #Chapter 3
 
@@ -166,3 +162,18 @@ hist(w)
 plot(samples)
 median(samples)
 
+
+
+#chap 4 modelling
+data(Howell1)
+d<-Howell1
+str(d)
+summary(d)
+sample_mu <- rnorm(1e4,178,20)
+sample_sigma <- runif(1e4,0,50)
+prior_h<-rnorm(1e4,sample_mu,sample_sigma)
+dens(prior_h)
+plot(prior_h)
+curve(dnorm(x,178,20),from=100,to=250)
+#pg84
+plot(sample(sample_mu,100,replace=T),sample(sample_sigma,100,replace=T))
