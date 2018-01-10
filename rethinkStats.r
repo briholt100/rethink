@@ -7,7 +7,7 @@ p_grid<-seq(from=0,to=1,length.out=count)
 #define prior
 prior<-rep(1,count)  #this is basically a uniform prior (I think)
 #prior <-ifelse(p_grid<.5,0,1) #  this prior is a .5 assumption
-=======
+#=======
 
 #build a function that does the above
 
@@ -46,16 +46,15 @@ posterior<-posterior.from.grid(trials=10,x=6,n=9)
 plot.pfg(x=posterior[[2]],y=posterior[[3]],trials=posterior[4])
 
 ###simple posterior from grid approx
-p<-seq(from=0,to=1,length.out=1000)
+p_grid<-seq(from=0,to=1,length.out=1000)
 prior<-rep(1,1000)  #this is basically a uniform prior (I think)
-likelihood <- dbinom(3,size=3,prob=p)
+likelihood <- dbinom(3,size=3,prob=p_grid)
 unstd.posterior <- likelihood * prior
 posterior<-unstd.posterior/sum(unstd.posterior)
-plot (p,posterior,type='b',xlab = 'probabilty of water',ylab = 'posterior prob')
+plot (p_grid,posterior,type='b',xlab = 'probabilty of water',ylab = 'posterior prob')
 
 
 samples<-sample(p_grid,  prob = posterior,size = 1e4,replace = T)
-=======
 samples<-sample(p,  prob = posterior,size = 1e4,replace = T)
 
 
@@ -67,7 +66,7 @@ qplot(samples)
 
 plot(density(samples))
 
-
+#Ch3
 library(rethinking)
 dens(samples)
 sum(posterior[p<.5])
@@ -76,71 +75,36 @@ sum(samples>.5 & samples < .75)/1e4
 PI(samples,prob=.5)
 HPDI(samples,prob=.5)
 
+sum(posterior*abs(.5-p_grid))
+loss<-sapply(p_grid,function(d) (sum(posterior*abs(d-p_grid)))) #list of loss values ? d is for difference? This is considered the aboslute loss function which  leads to the median, or you could do the quadratic loss  (d-p)^2, which leads to the posterior mean
+loss<-sapply(p_grid,function(d) (sum(posterior*abs((d-p_grid)^2))))
+
+p_grid[which.min(loss)]#this is the posterior median, the parameter value that splits the post such that half of mass is above and below.
+
 dbinom(0:2,size=2,prob = .7)
 rbinom(10,size=2,prob = .7)
 
 dummy_w<-rbinom(1e5,size=9,prob = .7)
-table(dummy_w)/1e5
+dw<-data.frame(table(dummy_w)/1e5)
 
-simplehist(dummy_w,xlab='dummy wataer count')
+simplehist(dummy_w,xlab='dummy water count')
 
-#chapter 2 excercises
-#easy
-w<-c(.3,1);
-pulls<-c(.5,.5)
-w*pulls/sum(w*pulls)
-
-ways<-c(0,1,2)
-ways/sum(ways)
-
-ways<-c(0,1,4)
-ways/sum(ways)
-
-#medium
-ways<-c(0,1,2)
-pull<-c(3,2,1)
-df<-data.frame(cbind(ways,pull))
-
-new.ways<-ways*pull
-
-df<-data.frame(cbind(df,new.ways,new.ways/sum(new.ways)))
-
-colnames(df)<-(c("prior ways",'weighted',"new ways to pull","final prob"))
-
-p_grid<-seq(from=0,to=1,length.out=20 )
-print("here is the pgrid")
-p_grid
-
-prior <-rep(1,20)  #uniform prior assumption
-prior <-ifelse(p_grid<.5,0,1)  #stepwise
-prior
-
-trials<-matrix(data=c(3,3,3,4,5,7),ncol=2,nrow=3, byrow=T)
-par(mfrow=c(2,2))
-for(i in 1:nrow(trials)){
-  cat ("binomial demo ",i)
-  print(dbinom(trials[i,1], trials[i,2],prob=p_grid))
-  plot(dbinom(trials[i,1], trials[i,2],prob=p_grid),type='b')
-}
-
-likelihood<-dbinom(6,9,prob=p_grid)
-unstd.posterior<-likelihood*prior
-posterior<-unstd.posterior/sum(unstd.posterior)
-df1<-cbind(p_grid,round(posterior,10))
-plot(df1,type='b')
-
-#Hard
-
-#panda A gives twins 10%
-#panda B gives twins 20%
-#each panda type 50% likely
-
-#witness a new panda give twins.  What's the probability the next birth is twins?
-
-#twins similar to water, singles to land.
+w<-rbinom(1e4,size=9,prob=.6)
+simplehist(w,xlab='dummy wataer count')
 
 
+#Chapter 3
 
+#simulating predictions from total posterior pg 66, usin samples from above
+w<-rbinom(1e4,size = 9, prob = samples)
+w<-rbinom(1e4,size = 9, prob = samples[samples >=.6 & samples <=.7])
+hist(w)
+simplehist(w)
+plot(samples)
+median(samples)
+
+
+#chapter ends with interesting ways to test if model fails: counting the number of runs of w (what would we expect if water is .7 covering planet?) and the # of switches from L to W, again, assuming a prob of water coverage.
 
 #ch 4 linear models
 
@@ -150,23 +114,48 @@ colnames(pos)<-'distance'
 ggplot(data=pos,aes(x=1:nrow(pos),y=distance,group=1:nrow(pos)))+geom_line(aes(y=))
 
   #rcode 4.6
+=======
+pos<-replicate(1000,sum(runif(16,-1,1)))
+prod(1 + runif(12,0,.1))
+growth<-replicate(1e3,prod(1 + runif(12,0,.1)))
+dens(growth,norm.comp=T)
+big<-replicate(1e3,prod(1 + runif(12,0,.5)))
+small<-replicate(1e3,prod(1 + runif(12,0,.01)))
+par(mfrow=c(1,2))
+dens(big,norm.comp=T,main = "big")
+dens(small,norm.comp=T,main = "small")
+
+log.big<-replicate(1e3,log(prod(1 + runif(12,0,.5))))
+dens(log.big,norm.comp=T,main = "log.big")
+
+
 w<-6; n<-9;
 p_grid<-(seq(0,1,length.out = 100))
 posterior<-dbinom(w,n,p_grid)*dunif(p_grid,0,1)
 posterior<-posterior/sum(posterior)
+plot (p_grid,posterior,type='b',xlab = 'probabilty of water',ylab = 'posterior prob')
 
 
+
+#chap 4 modelling
 data(Howell1)
 d<-Howell1
 str(d)
+summary(d)
+
+d2<-d[d$age>=18,]
+curve(dnorm(x,178,20),from=100,to=250)
+abline(v=(2*20)+178,col='red')
+abline(v=178-(2*20),col='blue')
+
+sample_mu <- rnorm(1e4,178,20)
+sample_sigma <- runif(1e4,0,50)
+prior_h<-rnorm(1e4,sample_mu,sample_sigma)
+dens(prior_h)
+plot(prior_h)
 
 
-#Chapter 3
 
-#simulating predictions from total posterior pg 66, usin samples from above
 
-w<-rbinom(1e4,size = 9, prob = samples[samples <.4 & samples >.3])
-hist(w)
-plot(samples)
-median(samples)
-
+#pg84
+plot(sample(sample_mu,100,replace=T),sample(sample_sigma,100,replace=T))
