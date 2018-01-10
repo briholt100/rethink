@@ -62,7 +62,7 @@ samples<-sample(p,  prob = posterior,size = 1e4,replace = T)
 plot(samples,col=adjustcolor('blue',alpha=.3))
 library(ggplot2)
 df<-data.frame(cbind(samples,posterior))
-ggplot(data=df,aes(y=samples,x=posterior,col=posterior))+geom_point()
+ggplot(data=df,aes(x=samples,y=posterior,col=posterior))+geom_point()
 qplot(samples)
 
 plot(density(samples))
@@ -144,8 +144,12 @@ plot(df1,type='b')
 
 #ch 4 linear models
 
-pos<-replicate(1000,sum(runif(16,-1,1)))
-#rcode 4.6
+pos<-data.frame(replicate(1000,sum(runif(16,-1,1))))
+colnames(pos)<-'distance'
+
+ggplot(data=pos,aes(x=1:nrow(pos),y=distance,group=1:nrow(pos)))+geom_line(aes(y=))
+
+  #rcode 4.6
 w<-6; n<-9;
 p_grid<-(seq(0,1,length.out = 100))
 posterior<-dbinom(w,n,p_grid)*dunif(p_grid,0,1)
