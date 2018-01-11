@@ -54,3 +54,123 @@ plot(df1,type='b')
 
 #twins similar to water, singles to land.
 
+
+
+#Chapter 3
+
+#easy
+
+###simple posterior from grid approx
+p_grid<-seq(from=0,to=1,length.out=1000)
+#p<-seq(from=0,to=1,length.out=1000)
+prior<-rep(1,1000)  #this is basically a uniform prior (I think)
+likelihood <- dbinom(6,size=9,prob=p_grid)
+unstd.posterior <- likelihood * prior
+posterior<-unstd.posterior/sum(unstd.posterior)
+plot (p_grid,posterior,type='b',xlab = 'probabilty of water',ylab = 'posterior prob')
+set.seed(100)
+samples<-sample(p_grid,  prob = posterior,size = 1e4,replace = T)
+
+#3e1 how much posterior probabilty lies below p = .2?
+
+sum(samples[samples<.2])/sum(samples)  #[1] 0.000138255
+
+#3e2 how much posterior probabilty lies above p = .8?
+
+sum(samples[samples>.8])/sum(samples)   #[1] 0.1493343
+
+#3e3 how much posterior probabilty lies between p = .2 and p = .8?
+
+sum(samples[samples>.2 & samples<.8])/sum(samples)   #[1] 0.8505274
+
+#3e4 20% of posterior probability lies below which value of p?
+
+#sum(samples[samples < X])/sum(samples) = .2  #solve for x
+
+quantile(samples,.2)
+
+sum(samples[samples<0.5195195])/sum(samples)   #[1] 0.5195195
+
+plot(posterior)
+abline(v=quantile(samples,.2),col='red')
+abline(v=quantile(samples,.2),col='blue')
+#3e5 20% of posterior probability lies above which value of p?
+sum(samples[samples<quantile(samples,.8)])/sum(samples)   #[1] 0.7413818
+
+abline(v=quantile(samples,.8),col='blue')
+#3e6 which values of p contain the narrowest interval equal to 66% of the posterior probability?
+
+HPDI(samples, prob=.66)
+
+#       |0.66     0.66| 
+#       0.5205205 0.7847848
+
+#3e7 which values of p contain 66% of the posterior probability, asuming equal posterior probabilty both below and above the interval?
+
+PI(samples, prob=.66)
+#   17%       83% 
+#  0.5005005 0.7687688 
+
+
+
+
+
+#3m1
+p_grid<-seq(from=0,to=1,length.out=1000)
+#p<-seq(from=0,to=1,length.out=1000)
+prior<-rep(1,1000)  #this is basically a uniform prior (I think)
+likelihood <- dbinom(8,size=15,prob=p_grid)
+unstd.posterior <- likelihood * prior
+posterior<-unstd.posterior/sum(unstd.posterior)
+plot (p_grid,posterior,type='b',xlab = 'probabilty of water',ylab = 'posterior prob')
+
+
+#3m2
+samples<-sample(p_grid,  prob = posterior,size = 1e4,replace = T)
+HPDI(samples, .9)
+#     |0.9      0.9| 
+#     0.3383383 0.7317317 
+
+#3m3  Construct posertior predictie check for hti smodel.  simulate the distributino of samples, averagoe over the posterior uncertain in p.  What is prob of obvserving 8 water in 15 tosses?
+
+
+
+
+dummy_w<-rbinom(1e5,size = 15, prob = samples)  
+sum(dummy_w[dummy_w==8])/sum(dummy_w)  #[1] 0.1494651
+table(dummy_w)/1e5
+simplehist(dummy_w)
+
+
+#3m4  Using the above data, calculate the prob of abserving 6 in 9 tosses.
+samples<-sample(p_grid,  prob = posterior,size = 1e4,replace = T)
+
+dummy_w<-rbinom(1e5,size = 9, prob = samples)  
+table(dummy_w)/1e5
+simplehist(dummy_w)
+
+sum(dummy_w[dummy_w==6])/sum(dummy_w)  #[1] 0.2263661
+
+
+
+
+#3m5
+
+birth1 <- c(1,0,0,0,1,1,0,1,0,1,0,0,1,1,0,1,1,0,0,0,1,0,0,0,1,0,
+            0,0,0,1,1,1,0,1,0,1,1,1,0,1,0,1,1,0,1,0,0,1,1,0,1,0,0,0,0,0,0,0,
+            1,1,0,1,0,0,1,0,0,0,1,0,0,1,1,1,1,0,1,0,1,1,1,1,1,0,0,1,0,1,1,0,
+            1,0,1,1,1,0,1,1,1,1)
+birth2 <- c(0,1,0,1,0,1,1,1,0,0,1,1,1,1,1,0,0,1,1,1,0,0,1,1,1,0,
+            1,1,1,0,1,1,1,0,1,0,0,1,1,1,1,0,0,1,0,1,1,1,1,1,1,1,1,1,1,1,1,1,
+            1,1,1,0,1,1,0,1,1,0,1,1,1,0,0,0,0,0,0,1,0,0,0,1,1,0,0,1,0,0,1,1,
+            0,0,0,1,1,1,0,0,0,0)
+#3h1
+#3h2
+#3h3
+#3h4
+#3h5
+
+
+
+
+

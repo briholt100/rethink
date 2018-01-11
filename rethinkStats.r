@@ -47,6 +47,7 @@ plot.pfg(x=posterior[[2]],y=posterior[[3]],trials=posterior[4])
 
 ###simple posterior from grid approx
 p_grid<-seq(from=0,to=1,length.out=1000)
+p<-seq(from=0,to=1,length.out=1000)
 prior<-rep(1,1000)  #this is basically a uniform prior (I think)
 likelihood <- dbinom(3,size=3,prob=p_grid)
 unstd.posterior <- likelihood * prior
@@ -84,7 +85,7 @@ p_grid[which.min(loss)]#this is the posterior median, the parameter value that s
 dbinom(0:2,size=2,prob = .7)
 rbinom(10,size=2,prob = .7)
 
-dummy_w<-rbinom(1e5,size=9,prob = .7)
+dummy_w<-rbinom(1e5,size=2,prob = .7)
 dw<-data.frame(table(dummy_w)/1e5)
 
 simplehist(dummy_w,xlab='dummy water count')
