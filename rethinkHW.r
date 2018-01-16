@@ -72,32 +72,28 @@ set.seed(100)
 samples<-sample(p_grid,  prob = posterior,size = 1e4,replace = T)
 
 #3e1 how much posterior probabilty lies below p = .2?
-
-sum(samples[samples<.2])/sum(samples)  #[1] 0.000138255
+sum(posterior[p_grid < 0.2])
+#[1] 0.0008560951
 
 #3e2 how much posterior probabilty lies above p = .8?
 
-sum(samples[samples>.8])/sum(samples)   #[1] 0.1493343
+sum(posterior[p_grid>.8])   #[1] 0.1203449
 
 #3e3 how much posterior probabilty lies between p = .2 and p = .8?
 
-sum(samples[samples>.2 & samples<.8])/sum(samples)   #[1] 0.8505274
+sum(posterior[p_grid>.2 & p_grid<.8])   #[1] 0.878799
 
 #3e4 20% of posterior probability lies below which value of p?
 
-#sum(samples[samples < X])/sum(samples) = .2  #solve for x
+quantile(samples,.2)   #[1] 0.5195195
 
-quantile(samples,.2)
-
-sum(samples[samples<0.5195195])/sum(samples)   #[1] 0.5195195
-
-plot(posterior)
+plot(density(samples))
 abline(v=quantile(samples,.2),col='red')
-abline(v=quantile(samples,.2),col='blue')
-#3e5 20% of posterior probability lies above which value of p?
-sum(samples[samples<quantile(samples,.8)])/sum(samples)   #[1] 0.7413818
 
+#3e5 20% of posterior probability lies above which value of p?
+quantile(samples,.8)    #[1] 0.7567568 
 abline(v=quantile(samples,.8),col='blue')
+
 #3e6 which values of p contain the narrowest interval equal to 66% of the posterior probability?
 
 HPDI(samples, prob=.66)
@@ -127,7 +123,7 @@ plot (p_grid,posterior,type='b',xlab = 'probabilty of water',ylab = 'posterior p
 
 #3m2
 samples<-sample(p_grid,  prob = posterior,size = 1e4,replace = T)
-HPDI(samples, .9)
+HPDI(samples, prob=.9)
 #     |0.9      0.9| 
 #     0.3383383 0.7317317 
 
@@ -145,8 +141,8 @@ simplehist(dummy_w)
 #3m4  Using the above data, calculate the prob of abserving 6 in 9 tosses.
 samples<-sample(p_grid,  prob = posterior,size = 1e4,replace = T)
 
-dummy_w<-rbinom(1e5,size = 9, prob = samples)  
-table(dummy_w)/1e5
+dummy_w<-rbinom(1e4,size = 9, prob = samples)  
+table(dummy_w)/1e4
 simplehist(dummy_w)
 
 sum(dummy_w[dummy_w==6])/sum(dummy_w)  #[1] 0.2263661
