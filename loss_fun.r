@@ -6,6 +6,7 @@
 
 library(tidyr)
 library(dplyr)
+library(ggplot2)
 
 p_grid <-seq(0,1,length.out=1000)
 prior<- rep(1,1000)
@@ -32,6 +33,7 @@ prior<- rep(1,5)
 likelihood<-dbinom(6,9,prob=p_grid)
 posterior<-likelihood*prior
 posterior<-posterior/sum(posterior)
+unst.posterior<-likelihood*prior
 
 Calculate_loss<-function(d) {
   for (i in 1:length(d)) {
@@ -40,10 +42,11 @@ Calculate_loss<-function(d) {
   }
 
 loss<-sapply(p_grid,Calculate_loss) #this creates The matrix
-posterior   #for output comp
+unst.posterior   #for output comp
 loss  #for output comp
 posterior*loss  #notice that the vector posterior multiplies column by col, not by row, so transpose in head,
-loss.1<-apply(loss*posterior,1,sum) # collapses grid into vector, the final desired output
+
+loss.1<-apply(loss,2,sum) # collapses grid into vector, the final desired output
 #note the above if you change from 2 to 1 (col to row) eval, you flip the loss curve
 
 
@@ -51,5 +54,10 @@ plot(posterior,x=p_grid,type='b',col='blue',ylim=c(-.1,1.4))
 lines(loss.1,x=p_grid,type='b',col='red')
 text(y=loss.1+.1,x=p_grid,labels=round(loss.1,3))
 
-
 #the moral of the story.  The posterior curve is mirror/flipped, transposed so that each posterior score is fed through the columsn of the P_grid difference matrix.  This amplifies the deviation of guess to correct when big, but if the deviation of guess from correctis small, or zero, the posterior score will have very little, if any effect on the loss.  
+
+#using ggplot and original data of n=1000
+
+df<-data_frame(p_grid,posterior)
+p<-ggplot(df, aes(p_grid,posterior))
+p+geom_line()+geom_line(aes(y=loss/1000,color='red'))+geom_rug(aes(x=posterior,y=loss/1000))
