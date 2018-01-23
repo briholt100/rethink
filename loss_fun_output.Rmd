@@ -1,0 +1,34 @@
+---
+title: "Loss_fun"
+author: "Brian Holt"
+date: "January 22, 2018"
+output: html_document
+---
+
+```{r}
+library(tidyr)
+library(dplyr)
+library(ggplot2)
+```
+
+
+```{r setup, include=T}
+knitr::opts_chunk$set(echo = TRUE)
+p_grid <-seq(0,1,length.out=100)
+prior<- rep(1,100)
+likelihood<-dbinom(3,3,prob=p_grid)
+posterior<-likelihood*prior
+posterior<-posterior/sum(posterior)
+unst.posterior<-likelihood*prior
+
+Calculate_loss<-function(d) {
+  for (i in 1:length(d)) {
+    return((abs(d[i]-p_grid)))   #this creates a matrix of p_grid differences; diagnol == zero
+  } 
+  }
+
+samples<-sample(p_grid,1e4,prob=posterior,replace=T)
+plot(posterior)
+
+```
+
