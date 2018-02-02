@@ -160,3 +160,17 @@ plot(prior_h)
 
 #pg84
 plot(sample(sample_mu,100,replace=T),sample(sample_sigma,100,replace=T))
+
+
+
+#Chapter 4 linear
+
+m4.3 <- map(
+  alist(
+    height ~ dnorm( mu , sigma ) ,
+    mu ~ a + b*weight,
+    a ~ dnorm( 156 , 100 ) ,
+    b ~ dnorm (0,10),
+    sigma ~ dunif( 0 , 50 )
+  ) ,
+  data=d2 )
