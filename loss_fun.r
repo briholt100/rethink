@@ -7,6 +7,7 @@
 library(tidyr)
 library(dplyr)
 library(ggplot2)
+library(latticeExtra)
 
 p_grid <-seq(0,1,length.out=1000)
 prior<- rep(1,1000)
@@ -27,10 +28,10 @@ length(samples)
 
 
 ############
-
-p_grid <-seq(0,1,length.out=100)
-prior<- rep(1,100)
-likelihood<-dbinom(3,3,prob=p_grid)
+n=20
+p_grid <-seq(0,1,length.out=n)
+prior<- rep(1,n)
+likelihood<-dbinom(6,9,prob=p_grid)
 posterior<-likelihood*prior
 posterior<-posterior/sum(posterior)
 unst.posterior<-likelihood*prior
@@ -51,14 +52,56 @@ loss.1<-apply(loss,2,sum) # collapses grid into vector, the final desired output
 
 loss.2<-sapply(p_grid,function(d) sum(posterior*abs(d-p_grid))) #original formula from book
 
-plot(posterior,x=p_grid,type='b',col='blue')
+plot(posterior,x=p_grid,type='b',col='blue',main = paste("length.out  = ",length(p_grid)))
 lines(loss.2/10,x=p_grid,type='b',col='red')
-text(y=loss.1+.1,x=p_grid,labels=round(loss.1,3))
+abline(v=p_grid[which.min(loss.2)],col='red')
+graph_text<-paste("low P_grid",round(p_grid[which.min(loss.2)],3),"----->")
+text(y=.0005,x=.75,labels=graph_text)
+
+
+
 
 #the moral of the story.  The posterior curve is mirror/flipped, transposed so that each posterior score is fed through the columsn of the P_grid difference matrix.  This amplifies the deviation of guess to correct when big, but if the deviation of guess from correctis small, or zero, the posterior score will have very little, if any effect on the loss.  
 
-#using ggplot and original data of n=1000
+#using ggplot and original data of n=100
 
 df<-data_frame(p_grid,posterior)
 p<-ggplot(df, aes(p_grid,posterior))
-p+geom_line()+geom_line(aes(y=loss/1000,color='red'))+geom_rug(aes(x=posterior,y=loss/1000))
+p+geom_line()+geom_line(aes(y=loss.2/10,color='red'))+geom_rug(aes(x=p_grid,y=loss.2/10))
+
+
+loss.df<-as_data_frame(loss)
+colnames(loss.df)<-paste0("diff",seq(1,n))
+tidy.loss.df<-loss.df %>% gather(difference,value)
+tidy.loss.df<-cbind(p_grid,tidy.loss.df)
+#loss.p<-ggplot(tidy.loss.df,aes(x=value))
+#loss.p+geom_bar()+facet_wrap(~difference)
+
+
+
+
+#see countourplot for density 
+ cloud(value~as.factor(p_grid)+as.factor(difference), tidy.loss.df[tidy.loss.df$difference != "diff20",], 
+       panel.3d.cloud=panel.3dbars, 
+       col.facet='grey', 
+      xbase=0.1, 
+      ybase=0.1, 
+#      scales=list(arrows=FALSE, col=1),
+      screen = list(z = 10, x = -60,y=20),
+      xlab = "possible probabilities",
+      ylab = 'Your guesses',
+      zlab = "differences",
+      par.settings = list(axis.line = list(col = "transparent"))
+      )
+ 
+ wireframe(posterior*loss,drape=T,
+           #light.source = c(10,10,10), 
+           screen = list(z = 40, x = -60, y=20),
+           xlab = "possible probabilities",
+           ylab = 'Your guesses',
+           zlab = "differences",
+           col.regions = colorRampPalette(c("blue", "pink"))(100)
+           )
+ 
+ 
+ 
