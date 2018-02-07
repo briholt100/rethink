@@ -29,10 +29,10 @@ length(samples)
 
 
 ############
-n=20
+n=30
 p_grid <-seq(0,1,length.out=n)
 prior<- rep(1,n)
-likelihood<-dbinom(6,9,prob=p_grid)
+likelihood<-dbinom(3,3,prob=p_grid)
 posterior<-likelihood*prior
 posterior<-posterior/sum(posterior)
 unst.posterior<-likelihood*prior
@@ -81,33 +81,43 @@ tidy.loss.df<-cbind(p_grid,tidy.loss.df)
 
 
 
-
-#see countourplot for density 
- cloud(posterior*loss,
-       panel.3d.cloud=panel.3dbars, 
-       col.facet='grey', 
-      xbase=0.4, 
-      ybase=0.4, 
-#      scales=list(arrows=FALSE, col=1),
-      screen = list(z = 48, x = -90, y=0),
-      xlab = "possible probabilities",
-      ylab = 'Your guesses',
-      zlab = "differences",
-      par.settings = list(axis.line = list(col = "transparent"))
-      )
+#the following wireframe shows a diagonal splitting
+#the posterior curve on the right side with 
+#the loss function on the left side, the highpoint of which is the min
  
  wf<-wireframe(posterior*loss,
            drape=T,
-           #light.source = c(10,10,10), 
-           screen = list(z = 20, x = -80, y=0),
+           #light.source = c(0,10,10), 
+           screen = list(z =0 , x = 0, y=0),
            xlab = "possible probabilities",
            ylab = 'Your guesses',
            zlab = "differences",
-           col.regions = colorRampPalette(c("blue", "pink"))(100)
+           
+           col.regions = colorRampPalette(c("blue", "pink"))(10)
            )
  
+ loss.p<-xyplot(loss.2/10~p_grid,col='red')
  
  
  grid.arrange(wf, P, ncol=2, top = "Main title")
  
+ #see countourplot for density 
+ cloud(posterior*loss,
+       panel.3d.cloud=panel.3dbars, 
+       col.facet='grey', 
+       xbase=0.4, 
+       ybase=0.4, 
+       #      scales=list(arrows=FALSE, col=1),
+       screen = list(z = 48, x = -90, y=0),
+       xlab = "possible probabilities",
+       ylab = 'Your guesses',
+       zlab = "differences",
+       par.settings = list(axis.line = list(col = "transparent"))
+ )
+ 
+ 
+ 
+ 
+ print(wf,split=c(1,1,1,1),more=T)
+ print(loss.p,split=c(1,1,1,1),more=T)
  
