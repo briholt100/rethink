@@ -8,6 +8,7 @@ library(tidyr)
 library(dplyr)
 library(ggplot2)
 library(latticeExtra)
+library(gridExtra)
 
 p_grid <-seq(0,1,length.out=1000)
 prior<- rep(1,1000)
@@ -56,7 +57,8 @@ plot(posterior,x=p_grid,type='b',col='blue',main = paste("length.out  = ",length
 lines(loss.2/10,x=p_grid,type='b',col='red')
 abline(v=p_grid[which.min(loss.2)],col='red')
 graph_text<-paste("low P_grid",round(p_grid[which.min(loss.2)],3),"----->")
-text(y=.0005,x=.75,labels=graph_text)
+#text(y=.0005,x=.75,labels=graph_text)
+legend ("topleft",paste("Loss minimized\nat P_grid =",round(p_grid[which.min(loss.2)],3)))
 
 
 
@@ -67,9 +69,9 @@ text(y=.0005,x=.75,labels=graph_text)
 
 df<-data_frame(p_grid,posterior)
 p<-ggplot(df, aes(p_grid,posterior))
-p+geom_line()+geom_line(aes(y=loss.2/10,color='red'))+geom_rug(aes(x=p_grid,y=loss.2/10))
+P<-p+geom_line()+geom_line(aes(y=loss.2/10,color='red'))+geom_rug(aes(x=p_grid,y=loss.2/10))
 
-
+par(mfrow=c(1,2))
 loss.df<-as_data_frame(loss)
 colnames(loss.df)<-paste0("diff",seq(1,n))
 tidy.loss.df<-loss.df %>% gather(difference,value)
@@ -81,27 +83,31 @@ tidy.loss.df<-cbind(p_grid,tidy.loss.df)
 
 
 #see countourplot for density 
- cloud(value~as.factor(p_grid)+as.factor(difference), tidy.loss.df[tidy.loss.df$difference != "diff20",], 
+ cloud(posterior*loss,
        panel.3d.cloud=panel.3dbars, 
        col.facet='grey', 
-      xbase=0.1, 
-      ybase=0.1, 
+      xbase=0.4, 
+      ybase=0.4, 
 #      scales=list(arrows=FALSE, col=1),
-      screen = list(z = 10, x = -60,y=20),
+      screen = list(z = 48, x = -90, y=0),
       xlab = "possible probabilities",
       ylab = 'Your guesses',
       zlab = "differences",
       par.settings = list(axis.line = list(col = "transparent"))
       )
  
- wireframe(posterior*loss,drape=T,
+ wf<-wireframe(posterior*loss,
+           drape=T,
            #light.source = c(10,10,10), 
-           screen = list(z = 40, x = -60, y=20),
+           screen = list(z = 20, x = -80, y=0),
            xlab = "possible probabilities",
            ylab = 'Your guesses',
            zlab = "differences",
            col.regions = colorRampPalette(c("blue", "pink"))(100)
            )
  
+ 
+ 
+ grid.arrange(wf, P, ncol=2, top = "Main title")
  
  
