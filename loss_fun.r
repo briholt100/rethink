@@ -29,10 +29,10 @@ length(samples)
 
 
 ############
-n=30
+n=6
 p_grid <-seq(0,1,length.out=n)
 prior<- rep(1,n)
-likelihood<-dbinom(3,3,prob=p_grid)
+likelihood<-dbinom(6,9,prob=p_grid)
 posterior<-likelihood*prior
 posterior<-posterior/sum(posterior)
 unst.posterior<-likelihood*prior
@@ -69,8 +69,9 @@ legend ("topleft",paste("Loss minimized\nat P_grid =",round(p_grid[which.min(los
 
 df<-data_frame(p_grid,posterior)
 p<-ggplot(df, aes(p_grid,posterior))
-P<-p+geom_line()+geom_line(aes(y=loss.2/10,color='red'))+geom_rug(aes(x=p_grid,y=loss.2/10))
+P<-p+geom_line()+geom_line(aes(y=loss.2/10),color='red')+geom_rug(aes(x=p_grid,y=loss.2/10))
 
+  
 par(mfrow=c(1,2))
 loss.df<-as_data_frame(loss)
 colnames(loss.df)<-paste0("diff",seq(1,n))
@@ -88,12 +89,12 @@ tidy.loss.df<-cbind(p_grid,tidy.loss.df)
  wf<-wireframe(posterior*loss,
            drape=T,
            #light.source = c(0,10,10), 
-           screen = list(z =0 , x = 0, y=0),
+           screen = list(z =-70 , x = -90, y=0),
            xlab = "possible probabilities",
            ylab = 'Your guesses',
            zlab = "differences",
            
-           col.regions = colorRampPalette(c("blue", "pink"))(10)
+           col.regions = colorRampPalette(c("blue", "red"))(100)
            )
  
  loss.p<-xyplot(loss.2/10~p_grid,col='red')
