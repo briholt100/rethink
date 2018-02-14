@@ -9,6 +9,8 @@ output: html_document
 library(tidyr)
 library(dplyr)
 library(ggplot2)
+library(latticeExtra)
+library(gridExtra)
 ```
 
 

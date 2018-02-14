@@ -29,7 +29,7 @@ length(samples)
 
 
 ############
-n=6
+n=20
 p_grid <-seq(0,1,length.out=n)
 prior<- rep(1,n)
 likelihood<-dbinom(6,9,prob=p_grid)
@@ -47,6 +47,8 @@ loss<-sapply(p_grid,Calculate_loss) #this creates The matrix
 unst.posterior   #for output comp
 loss  #for output comp
 posterior*loss  #notice that the vector posterior multiplies column by col, not by row, so transpose in head,
+
+wireframe(loss,drape=T,screen = list(z =30 , x = -60, y=0),main="difference of guess from reality")
 
 loss.1<-apply(loss,2,sum) # collapses grid into vector, the final desired output
 #note the above if you change from 2 to 1 (col to row) eval, you flip the loss curve
@@ -88,19 +90,31 @@ tidy.loss.df<-cbind(p_grid,tidy.loss.df)
  
  wf<-wireframe(posterior*loss,
            drape=T,
+           main="loss function before \ncolapsed by sum",
            #light.source = c(0,10,10), 
-           screen = list(z =-70 , x = -90, y=0),
-           xlab = "possible probabilities",
-           ylab = 'Your guesses',
-           zlab = "differences",
-           
+           screen = list(z =-90 , x = -80, y=0),
+           xlab = list("possible\n probabilities",rot=0),
+           ylab = list('Your guesses',rot=0),
+           zlab = list("differences between\n guess and actual",rot=90),
+           zoom=.9,
+           scales = list(arrows = FALSE,
+                         x=list(draw=F),
+                         y=list(draw=F),
+                         z=list(draw=F),
+                         #col = "black",
+                        # font = 1,
+                         #tck = c(0.8, 0.6, 0.4),
+                         distance =c(1.2,.8, 1.45)), 
            col.regions = colorRampPalette(c("blue", "red"))(100)
            )
  
  loss.p<-xyplot(loss.2/10~p_grid,col='red')
  
- 
- grid.arrange(wf, P, ncol=2, top = "Main title")
+ lattice.options(
+   layout.heights=list(bottom.padding=list(x=0), top.padding=list(x=0)),
+   layout.widths=list(left.padding=list(x=0), right.padding=list(x=0))
+ )
+ grid.arrange(wf, P, ncol=2, top = "Loss function over\n Posterior Distribution")
  
  #see countourplot for density 
  cloud(posterior*loss,
