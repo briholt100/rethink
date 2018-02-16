@@ -29,7 +29,7 @@ length(samples)
 
 
 ############
-n=20
+n=5
 p_grid <-seq(0,1,length.out=n)
 prior<- rep(1,n)
 likelihood<-dbinom(6,9,prob=p_grid)
@@ -39,7 +39,7 @@ unst.posterior<-likelihood*prior
 
 Calculate_loss<-function(d) {
   for (i in 1:length(d)) {
-    return((abs(d[i]-p_grid)))   #this creates a matrix of p_grid differences; diagnol == zero
+    return(((d[i]-p_grid)))   #this creates a matrix of p_grid differences; diagnol == zero
   } 
   }
 
@@ -48,8 +48,9 @@ unst.posterior   #for output comp
 loss  #for output comp
 posterior*loss  #notice that the vector posterior multiplies column by col, not by row, so transpose in head,
 
-wireframe(loss,drape=T,screen = list(z =30 , x = -60, y=0),main="difference of guess from reality")
-
+#the following code basically plots the absolute deviation of guesses from possible outcomes
+wireframe(loss,drape=T,screen = list(z =-90 , x = -90, y=0),ylab = list('Your guesses\ncolumns 1 through n\n\n',rot=0),main="difference of guess from reality")
+#but we need to start adding back the components of the function, starting with finding the absolute differences because we are really only interested in magnitude of loss, not the direction (how do you have negative loss?)
 loss.1<-apply(loss,2,sum) # collapses grid into vector, the final desired output
 #note the above if you change from 2 to 1 (col to row) eval, you flip the loss curve
 
