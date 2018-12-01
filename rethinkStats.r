@@ -188,7 +188,7 @@ prior_h <- rnorm( 1e4 , sample_mu , sample_sigma )
 dens( prior_h )
 
 ## R code 4.14
-mu.list <- seq( from=140, to=160 , length.out=200 )
+mu.list <- seq( from=150, to=170 , length.out=200 )
 sigma.list <- seq( from=4 , to=9 , length.out=200 )
 post <- expand.grid( mu=mu.list , sigma=sigma.list )
 post$LL <- sapply( 1:nrow(post) , function(i) sum( dnorm(
