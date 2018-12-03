@@ -1,3 +1,5 @@
+library(ggplot2)
+library(rethinking)
 #Code to  follow along rethinking stats with bayes, r.mcelreath
 #ch2  set up grid approximation
 
@@ -60,7 +62,7 @@ samples<-sample(p,  prob = posterior,size = 1e4,replace = T)
 
 
 plot(samples,col=adjustcolor('blue',alpha=.3))
-library(ggplot2)
+
 df<-data.frame(cbind(samples,posterior))
 ggplot(data=df,aes(x=samples,y=posterior,col=posterior))+geom_point()
 qplot(samples)
@@ -68,7 +70,7 @@ qplot(samples)
 plot(density(samples))
 
 #Ch3
-library(rethinking)
+
 dens(samples)
 sum(posterior[p<.5])
 sum(samples<.5)/1e4
@@ -112,10 +114,10 @@ median(samples)
 pos<-data.frame(replicate(1000,sum(runif(16,-1,1))))
 colnames(pos)<-'distance'
 
-ggplot(data=pos,aes(x=1:nrow(pos),y=distance,group=1:nrow(pos)))+geom_line(aes(y=))
+ggplot(data=pos,aes(x=1:nrow(pos),y=distance,group=1:nrow(pos)))+geom_line(aes(y=distance))
 
   #rcode 4.6
-=======
+#=======
 pos<-replicate(1000,sum(runif(16,-1,1)))
 prod(1 + runif(12,0,.1))
 growth<-replicate(1e3,prod(1 + runif(12,0,.1)))
