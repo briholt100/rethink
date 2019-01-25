@@ -58,6 +58,8 @@ plot (p_grid,posterior,type='b',xlab = 'probabilty of water',ylab = 'posterior p
 
 
 samples<-sample(p_grid,  prob = posterior,size = 1e4,replace = T)
+##above code will sample each value of p_grid proportional to teh probabilities in prob which = posterior
+
 samples<-sample(p,  prob = posterior,size = 1e4,replace = T)
 
 
