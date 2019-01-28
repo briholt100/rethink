@@ -49,7 +49,7 @@ loss  #for output comp
 posterior*loss  #notice that the vector posterior multiplies column by col, not by row, so transpose in head,
 
 #the following code basically plots the absolute deviation of guesses from possible outcomes
-wireframe(loss,drape=T,ylab = list('Y axis\nYour guesses\ncolumns 1\n through n\n\n',rot=0),xlab = list('X axis\npossible \ntrue values \n\n',rot=0),main="difference of guess from reality",screen = list(z =-90 , x = -90, y=0))
+wireframe(loss,drape=T,ylab = list('Y axis\nYour guesses\ncolumns 1\n through n\n\n',rot=0),xlab = list('X axis\npossible \ntrue values \n\n',rot=0),main="difference of guess from reality",screen = list(z =-90 , x = -70, y=0))
 #but we need to start adding back the components of the function, starting with finding the absolute differences because we are really only interested in magnitude of loss, not the direction (how do you have negative loss?)
 loss.1<-apply(loss,2,sum) # collapses grid into vector, the final desired output
 #note the above if you change from 2 to 1 (col to row) eval, you flip the loss curve
@@ -93,7 +93,7 @@ tidy.loss.df<-cbind(p_grid,tidy.loss.df)
            drape=T,
            main="loss function before \ncolapsed by sum",
            #light.source = c(0,10,10),
-           screen = list(z =-90 , x = -80, y=0),
+           screen = list(z =-105 , x = -70, y=0),
            xlab = list("possible\n probabilities",rot=0),
            ylab = list('Your guesses',rot=0),
            zlab = list("differences between\n guess and actual",rot=90),

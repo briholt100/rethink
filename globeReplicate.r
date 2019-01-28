@@ -1,20 +1,24 @@
 library(rethinking)
-df<-data.frame(c(1,0,1,0,1,1,0,1,0))
+library(tidyr)
+library(dplyr)
+df.full<-data.frame(c(1,0,1,1,1,0,1,0,1))
 nrow(df)
-names(df)<-"water"
+names(df.full)<-"water"
+n=9
+df<-df.full %>% slice(1:n)
 m1.1 <- map(
   alist(
-    water ~ dbinom(2, p) ,
+    water ~ dbinom(1, p) ,
     p ~ dunif( 0 , 1 )
   ) ,
-  data=list(water=1) )
+  data=df) 
 precis(m1.1)
 post <- extract.samples( m1.1 , n=20 )
 
-plot(density( df$water)) , dN$height ,
-      xlim=range(d2$weight) , ylim=range(d2$height) ,
-      col=rangi2 , xlab="weight" , ylab="height" )
-mtext(concat("N = ",N))
+plot(density(df$water), post,
+      #xlim=range(df$water) , 
+       xlab="water" , ylab="density" )
+mtext(concat("N = ",n))
 
 # plot the lines, with transparency
 for ( i in 1:20 )
