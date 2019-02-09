@@ -58,6 +58,8 @@ plot (p_grid,posterior,type='b',xlab = 'probabilty of water',ylab = 'posterior p
 
 
 samples<-sample(p_grid,  prob = posterior,size = 1e4,replace = T)
+##above code will sample each value of p_grid proportional to teh probabilities in prob which = posterior
+
 samples<-sample(p,  prob = posterior,size = 1e4,replace = T)
 
 
@@ -114,7 +116,7 @@ median(samples)
 pos<-data.frame(replicate(1000,sum(runif(16,-1,1))))
 colnames(pos)<-'distance'
 
-ggplot(data=pos,aes(x=1:nrow(pos),y=distance,group=1:nrow(pos)))+geom_line(aes(y=distance))
+ggplot(data=pos,aes(x=1:nrow(pos),y=distance,))+geom_line(aes(y=distance))
 
   #rcode 4.6
 #=======
