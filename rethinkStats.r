@@ -1163,6 +1163,25 @@ lines( np.seq , mu.mean )
 lines( np.seq , mu.PI[1,] , lty=2 )
 lines( np.seq , mu.PI[2,] , lty=2 )
 
+## R code 5.27 a botton right quadrant page 138
+mean.neocortex.perc <- mean(dcc$neocortex.perc)
+np.seq <- 0:100
+pred.data <- data.frame(
+  neocortex.perc=mean.neocortex.perc,
+  log.mass=np.seq
+)
+
+mu <- link( m5.7 , data=pred.data , n=1e4 )
+mu.mean <- apply( mu , 2 , mean )
+mu.PI <- apply( mu , 2 , PI )
+
+plot( kcal.per.g ~ log.mass , data=dcc , type="n" )
+lines( np.seq , mu.mean )
+lines( np.seq , mu.PI[1,] , lty=2 )
+lines( np.seq , mu.PI[2,] , lty=2 )
+
+
+
 ## R code 5.28
 N <- 100                         # number of cases
 rho <- 0.7                       # correlation btw x_pos and x_neg
