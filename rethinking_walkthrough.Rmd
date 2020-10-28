@@ -1,0 +1,83 @@
+---
+title: "Rethinking Walkthrough"
+author: "Brian Holt"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE,echo=F}
+knitr::opts_chunk$set(echo = TRUE)
+library(rethinking)
+library(tidyverse)
+library(lubridate)
+library(splines)
+```
+
+# Chapter 4 Splines  @{splines}
+```{r}
+data(cherry_blossoms)
+d = cherry_blossoms
+precis(d)
+```
+
+```{r}
+with(d,plot(x=year,y=temp, col = rgb(red = 0, green = .5, blue = 01, alpha = 0.2),
+cex=.5,ylab='March Temperature'))
+
+
+```
+
+```{r}
+quantile(d$year)
+range(d$year)
+```
+```{r}
+d2 <- d[complete.cases(d$temp),]
+num_knots <-5
+knot_list <- quantile(d2$year,probs=seq(0,1, length.out=num_knots))
+print(knot_list)
+```
+
+
+
+```{r}
+
+B <- bs(d2$year,
+        knots=knot_list[-c(1,num_knots)],
+        degree = 10, intercept = T)
+m4.7 <- quap(
+  alist(
+    D~dnorm(mu,sigma),
+    mu <- a + B %*% w,
+    a ~dnorm(100,10),
+    w~ dnorm(0,10),
+    sigma ~ dexp(1)
+  ), data=list(D = d2$temp, B=B),
+  start = list( w=rep(0, ncol(B)))
+  )
+```
+
+```{r}
+plot (NULL, xlim=range(d2$year),ylim=c(0,1),xlab='year',ylab='basis')
+for(i in 1:ncol(B)){lines(d2$year,B[,i])}
+```
+
+```{r}
+mu <- link(m4.7)
+mu_PI <- apply(mu,2,PI,.97)
+plot(d2$year, d2$temp,col=col.alpha(rangi2,.3),pch=16)
+shade(mu_PI,d2$year,col=col.alpha("black",.5))
+```
+
+```{r}
+post <- extract.samples(m4.7,n =20)
+```
+```{r}
+plot(x=d2$year,y=d2$temp, col = rgb(red = 0, green = .5, blue = 01, alpha = 0.4),
+cex=.5,ylab='March Temperature',ylim=(c(0,100)),xlim=(c(0,2000)))
+ for (i in 1:20){
+   curve(post$a[i]+post$sigma[i] * (x-mean(d2$temp,na.rm=T)),
+         col=col.alpha('black',.3),add=T)
+ }
+```
+
