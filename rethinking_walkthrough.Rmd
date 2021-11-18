@@ -81,3 +81,35 @@ cex=.5,ylab='March Temperature',ylim=(c(0,100)),xlim=(c(0,2000)))
  }
 ```
 
+
+# Waffle house
+
+
+```{r}
+data(WaffleDivorce)
+w <- WaffleDivorce
+str(w)
+precis(w)
+```
+
+
+```{r}
+
+cor(w$MedianAgeMarriage,w$Divorce)
+fit.1<- lm(Divorce~Marriage, w)
+fit.2<- lm(Divorce~MedianAgeMarriage, w)
+
+par(mfrow=c(2,2))
+plot(w$Divorce~w$Marriage)
+abline(fit.1)
+
+plot(w$Divorce~w$MedianAgeMarriage)
+abline(fit.2)
+
+fit.3 <- lm(Divorce~MedianAgeMarriage+Marriage, w)
+summary(fit.3)
+
+plot(w$MedianAgeMarriage,w$Marriage)
+
+```
+
