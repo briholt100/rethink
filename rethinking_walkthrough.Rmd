@@ -11,9 +11,11 @@ library(rethinking)
 library(tidyverse)
 library(lubridate)
 library(splines)
+library(gridExtra)
 ```
 
-# Chapter 4 Splines  @{splines}
+# Chapter 4 Splines @splines
+
 ```{r}
 data(cherry_blossoms)
 d = cherry_blossoms
@@ -31,14 +33,13 @@ cex=.5,ylab='March Temperature'))
 quantile(d$year)
 range(d$year)
 ```
+
 ```{r}
 d2 <- d[complete.cases(d$temp),]
 num_knots <-5
 knot_list <- quantile(d2$year,probs=seq(0,1, length.out=num_knots))
 print(knot_list)
 ```
-
-
 
 ```{r}
 
@@ -72,6 +73,7 @@ shade(mu_PI,d2$year,col=col.alpha("black",.5))
 ```{r}
 post <- extract.samples(m4.7,n =20)
 ```
+
 ```{r}
 plot(x=d2$year,y=d2$temp, col = rgb(red = 0, green = .5, blue = 01, alpha = 0.4),
 cex=.5,ylab='March Temperature',ylim=(c(0,100)),xlim=(c(0,2000)))
@@ -81,9 +83,7 @@ cex=.5,ylab='March Temperature',ylim=(c(0,100)),xlim=(c(0,2000)))
  }
 ```
 
-
 # Waffle house
-
 
 ```{r}
 data(WaffleDivorce)
@@ -92,24 +92,78 @@ str(w)
 precis(w)
 ```
 
-
 ```{r}
 
 cor(w$MedianAgeMarriage,w$Divorce)
 fit.1<- lm(Divorce~Marriage, w)
 fit.2<- lm(Divorce~MedianAgeMarriage, w)
-
+fit.3 <- lm(Divorce~MedianAgeMarriage+Marriage, w)
+summary(fit.3)
 par(mfrow=c(2,2))
 plot(w$Divorce~w$Marriage)
 abline(fit.1)
-
 plot(w$Divorce~w$MedianAgeMarriage)
 abline(fit.2)
-
-fit.3 <- lm(Divorce~MedianAgeMarriage+Marriage, w)
-summary(fit.3)
-
 plot(w$MedianAgeMarriage,w$Marriage)
+par(mfrow=c(1,1))
+```
+
+reminders: \# fit.1\<- lm(Divorce\~Marriage, w) \# fit.2\<- lm(Divorce\~MedianAgeMarriage, w) \# fit.3 \<- lm(Divorce\~MedianAgeMarriage+Marriage, w) \# fit.4 \<- lm(Marriage\~MedianAgeMarriage, w)
+
+```{r}
+fit.4 <- lm(Marriage~MedianAgeMarriage, w)
+summary(fit.4)
+fit.4$residuals
+```
+
+```{r}
+w %>%  ggplot(aes(x=MedianAgeMarriage,y=Marriage))+
+  geom_point() +geom_smooth(method='lm') -> plot1
+
+w %>% mutate(Mar.MedAge.resid= fit.4$residuals) %>%  ggplot(aes(x=Mar.MedAge.resid,y=Divorce))+
+  geom_point() + geom_smooth(method='lm')-> plot2
+```
+
+```{r}
+Wondering about interactions
+
+fit.5 <- lm(Divorce~MedianAgeMarriage*Marriage, w)
+summary(fit.5)
+plot(y=w$Divorce,fit.5$residuals)
 
 ```
+
+```{r}
+grid.arrange(plot1,plot2,ncol=2)
+
+```
+
+```{r}
+n_samples <- 1000
+p <- rep( NA , n_samples )
+p[1] <- 0.5
+W <- 6
+L <- 3
+for ( i in 2:n_samples ) {
+p_new <- rnorm( 1 , p[i-1] , 0.1 )
+if ( p_new < 0 ) p_new <- abs( p_new )
+if ( p_new > 1 ) p_new <- 2 - p_new
+q0 <- dbinom( W , W+L , p[i-1] )
+q1 <- dbinom( W , W+L , p_new )
+print(q0)
+print(q1)
+cat ("\nhere is the ratio\n")
+cat(q1/q0,"\n\n")
+cat("here is the p-new.......",p_new,'\n')
+ran.unif<- runif(1)
+cat("here is the runif(1).....",ran.unif,"\n")
+p[i] <- ifelse( ran.unif < q1/q0 , p_new , p[i-1] )
+}
+```
+
+```{r}
+dens( p , xlim=c(0,1) )
+curve( dbeta( x , W+1 , L+1 ) , lty=2 , add=TRUE )
+```
+
 
