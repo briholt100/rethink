@@ -1,4 +1,11 @@
 #MCMC from his book
+# install.packages("mvtnorm")
+# install.packages("devtools")
+# install.packages("dagitty")
+# install.packages("coda")
+
+# install.packages("cmdstanr", repos = c('https://stan-dev.r-universe.dev', getOption("repos")))
+# devtools::install_github("rmcelreath/rethinking")
 
 library(rethinking)
 
@@ -25,4 +32,4 @@ hist(p)
 dens(p)
 curve(dbeta(x,W+1,L+1), lty=2, add=T)
 
-plot(density(p))
+# plot(density(p))
