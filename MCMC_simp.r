@@ -24,3 +24,5 @@ p
 hist(p)
 dens(p)
 curve(dbeta(x,W+1,L+1), lty=2, add=T)
+
+plot(density(p))
