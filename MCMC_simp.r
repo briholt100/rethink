@@ -9,11 +9,12 @@
 
 library(rethinking)
 
-n_samples <- 1000
+n_samples <- 10
 p <- rep(NA,n_samples)
 p[1] <- 0.5
 W  <- 6
 L <- 3
+tally <- data.frame(p,p_new=NA)
 for(i in 2:n_samples){
   p_new <- rnorm(1, p[i-1], 0.1)
   # print(paste0( "p_new is ",p_new))
@@ -24,9 +25,10 @@ for(i in 2:n_samples){
   # print(paste0("q0 is ",q0))
   # print(paste0("q1 is ",q1))
   p[i] <- ifelse(runif(1) < q1/q0, p_new,p[i-1])
-
-    # print(paste0("new p[i] is ",p[i]))
+  tally[i,] <-c(p[i],p_new)
+      # print(paste0("new p[i] is ",p[i]))
   }
+tally
 p
 hist(p)
 dens(p)
