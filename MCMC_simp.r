@@ -9,7 +9,7 @@
 
 library(rethinking)
 
-n_samples <- 10
+n_samples <- 10000
 p <- rep(NA,n_samples)
 p[1] <- 0.5
 W  <- 6
@@ -28,10 +28,11 @@ for(i in 2:n_samples){
   tally[i,] <-c(p[i],p_new)
       # print(paste0("new p[i] is ",p[i]))
   }
-tally
+tail(tally)
 p
 hist(p)
 dens(p)
 curve(dbeta(x,W+1,L+1), lty=2, add=T)
 
 # plot(density(p))
+p-tally$p
